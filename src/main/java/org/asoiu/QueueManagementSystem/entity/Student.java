@@ -1,0 +1,39 @@
+package org.asoiu.QueueManagementSystem.entity;
+
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import javax.persistence.*;
+import java.util.Date;
+
+@Data
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+public class Student {
+
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long studentId;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "pinCode")
+    private String pinCode;
+
+    @Column(name = "password")
+    private String password;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "schedule_id", nullable = false)
+    private Schedule schedule;
+
+    @Column(name = "createdDate", nullable = false, updatable = false)
+    @Temporal(value = TemporalType.DATE)
+    @CreationTimestamp
+    private Date createdDate;
+
+
+}
