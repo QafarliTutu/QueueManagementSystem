@@ -7,6 +7,7 @@ import org.asoiu.QueueManagementSystem.service.EventService;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
+import java.util.List;
 
 @Log4j2
 @RestController
@@ -20,8 +21,14 @@ public class Test {
 
     @PostMapping ("/create/event")
     public Event createEvent(@RequestBody EventDto eventDto) throws ParseException {
-        log.info("EVENTCONTROLLER STARTED: " + " createEvent " + "REQUEST BODY= " + eventDto.toString());
+        log.info("CALLED: " + " createEvent " + "REQUEST BODY= " + eventDto.toString());
         return eventService.createEvent(eventDto);
+    }
+
+    @GetMapping("/get/all")
+    public List<Event> getAllEvents(){
+        log.info("CALLED: " + " getAllEvents " );
+        return eventService.getAllEvents();
     }
 
 }
