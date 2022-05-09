@@ -20,6 +20,9 @@ public class Student {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "name")
+    private String name;
+
     @Column(name = "pinCode")
     private String pinCode;
 

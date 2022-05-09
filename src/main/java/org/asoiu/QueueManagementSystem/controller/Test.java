@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 public class Test {
 
-    private EventService eventService;
+    private final EventService eventService;
 
     public Test(EventService eventService) {
         this.eventService = eventService;
@@ -29,6 +29,11 @@ public class Test {
     public List<Event> getAllEvents(){
         log.info("CALLED: " + " getAllEvents " );
         return eventService.getAllEvents();
+    }
+
+    @GetMapping("/events/{eventId}")
+    public Event findEventById(@PathVariable Long eventId) {
+        return eventService.findEventById(eventId);
     }
 
 }

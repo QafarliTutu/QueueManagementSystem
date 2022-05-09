@@ -5,25 +5,22 @@ import lombok.extern.log4j.Log4j2;
 import org.asoiu.QueueManagementSystem.entity.Event;
 import org.asoiu.QueueManagementSystem.entity.Schedule;
 import org.asoiu.QueueManagementSystem.entity.Student;
+import org.asoiu.QueueManagementSystem.repository.EventRepository;
 import org.asoiu.QueueManagementSystem.repository.ScheduleRepository;
 import org.asoiu.QueueManagementSystem.repository.StudentRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 @Log4j2
 @Service
+@AllArgsConstructor
 public class ScheduleService {
 
-    private ScheduleRepository scheduleRepo;
-    private StudentRepository studentRepo;
-
-    public ScheduleService(ScheduleRepository scheduleRepo) {
-        this.scheduleRepo = scheduleRepo;
-    }
+    private final ScheduleRepository scheduleRepo;
+    private final StudentRepository studentRepo;
+    private final EventRepository eventRepo;
 
     public List<Schedule> createSchedule(Event event){
         log.info("STARTED: " + " createSchedule ");
@@ -54,7 +51,9 @@ public class ScheduleService {
     public List<Schedule> getAllSchedule(Long eventId){
         log.info("STARTED: " + " getAllSchedule ");
         log.info("EVENTID: " + eventId);
-        List<Schedule> scheduleList = scheduleRepo.findAllByEvent(eventId);
+
+        Event event = eventRepo.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found with id " + eventId));
+        List<Schedule> scheduleList = scheduleRepo.findAllByEvent(event);
         log.info("SCHEDULE LIST: " + scheduleList);
         log.info("FINISHED: " + " getAllSchedule ");
         return scheduleList;

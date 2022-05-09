@@ -42,10 +42,10 @@ public class EventService {
 
     }
 
-    public Event findEventById(Long id){
+    public Event findEventById(Long eventId){
         log.info("STARTED: " + " findById ");
-        log.info("ID: " + id);
-        Event event = eventRepo.findById(id).orElseThrow(()-> new RuntimeException("Event not found with ID: " + id));
+        log.info("ID: " + eventId);
+        Event event = eventRepo.findById(eventId).orElseThrow(()-> new RuntimeException("Event not found with ID: " + eventId));
         log.info("FINISHED: " + " findById ");
         return  event;
     }
