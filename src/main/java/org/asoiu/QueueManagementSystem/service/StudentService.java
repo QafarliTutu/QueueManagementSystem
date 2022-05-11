@@ -19,19 +19,29 @@ public class StudentService {
     private final StudentRepository studentRepository;
 
     public Student register(RegisterStudentDto registerStudentDto) {
+        log.info("STARTED: " + " register ");
+        log.info("REGISTERSTUDENTDTO: " + registerStudentDto);
         Optional<Student> opStudent = studentRepository.findStudentByEmail(registerStudentDto.getEmail());
         if (opStudent.isPresent())
             throw new RuntimeException("student already exists with email" + registerStudentDto.getEmail());
         ModelMapper mapper = new ModelMapper();
         Student student = mapper.map(registerStudentDto, Student.class);
+        log.info("STUDENT: " + student);
+        log.info("FINISHED: " + " register ");
         return studentRepository.save(student);
     }
 
     public Student login(LoginStudentDto loginStudentDto) {
+        log.info("STARTED: " + " login ");
+        log.info("LOGINSTUDENTDTO: " + loginStudentDto);
         Student student = studentRepository.findStudentByEmail(loginStudentDto.getEmail())
                 .orElseThrow(() -> new RuntimeException("student not found with id: " + loginStudentDto.getEmail()));
         if (!student.getPassword().equals(loginStudentDto.getPassword()))
             throw new RuntimeException("password doesn't match");
+        log.info("STUDENT: " + student);
+        log.info("FINISHED: " + " login ");
         return student;
     }
+
+
 }

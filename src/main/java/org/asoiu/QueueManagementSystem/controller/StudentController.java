@@ -22,6 +22,7 @@ public class StudentController {
 
     @PostMapping("/register")
     public ServiceResponse<Student> register(@RequestBody RegisterStudentDto registerStudentDto) {
+        log.info("CALLED: " + " register " + "REQUEST BODY= " + registerStudentDto.toString());
         Student student = studentService.register(registerStudentDto);
         return ServiceResponse.<Student>builder()
                 .successful(true)
@@ -31,6 +32,7 @@ public class StudentController {
 
     @PostMapping("/login")
     public ServiceResponse<Student> login(@RequestBody LoginStudentDto loginStudentDto) {
+        log.info("CALLED: " + " login " + "REQUEST BODY= " + loginStudentDto.toString());
         Student student = studentService.login(loginStudentDto);
         return ServiceResponse.<Student>builder()
                 .successful(true)

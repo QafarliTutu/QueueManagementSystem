@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.PriorityQueue;
 
 @Log4j2
 @RestController
@@ -20,17 +21,36 @@ public class ScheduleController {
 
     @GetMapping("/all/{eventId}")
     public List<Schedule> getAllSchedules(@PathVariable Long eventId) {
+        log.info("CALLED: " + " getAllSchedules " + "PATH VARIABLE= " + eventId);
         return scheduleService.getAllSchedule(eventId);
     }
 
     @PostMapping("/reserve")
     public Schedule makeReserve(@RequestBody ReserveDto reserveDto) {
+        log.info("CALLED: " + " makeReserve " + "REQUEST BODY= " + reserveDto.toString());
         return scheduleService.makeReserve(reserveDto.getStudentId(), reserveDto.getScheduleId());
     }
 
     @PostMapping("/cancel")
     public Schedule cancel(@RequestBody ReserveDto reserveDto) {
+        log.info("CALLED: " + " cancel " + "REQUEST BODY= " + reserveDto.toString());
         return scheduleService.cancelSchedule(reserveDto.getScheduleId());
     }
+
+    @GetMapping("/queue/{eventId}")
+    public PriorityQueue<Schedule> getQueue(@PathVariable Long eventId){
+        return scheduleService.getQueue(eventId);
+    }
+
+    @GetMapping("/queue/complete/{scheduleId}")
+    public Schedule completeReservation(@PathVariable Long scheduleId){
+        return scheduleService.completeReservation(scheduleId);
+    }
+
+    @GetMapping("/queue/decline/{scheduleId}")
+    public Schedule declineReservation(@PathVariable Long scheduleId){
+        return scheduleService.declineReservation(scheduleId);
+    }
+
 
 }

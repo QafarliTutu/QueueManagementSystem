@@ -30,7 +30,7 @@ public class Student {
     private String password;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "schedule_id", nullable = false)
+    @JoinColumn(name = "schedule_id")
     private Schedule schedule;
 
     @Column(name = "createdDate", nullable = false, updatable = false)

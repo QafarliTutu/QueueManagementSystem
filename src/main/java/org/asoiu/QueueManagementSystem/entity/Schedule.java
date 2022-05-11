@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -12,7 +13,7 @@ import java.util.Date;
 @ToString(exclude = {"student", "event"})
 @NoArgsConstructor
 @AllArgsConstructor
-public class Schedule {
+public class Schedule implements Comparable{
 
     @Id
     @Column(name = "id")
@@ -20,8 +21,8 @@ public class Schedule {
     private Long scheduleId;
 
     @Column(name = "availableDate")
-    @Temporal(value = TemporalType.DATE)
-    private Date availableDate;
+    //@Temporal(value = TemporalType.TIMESTAMP)
+    private LocalDateTime availableDate;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "event_id",nullable = false)
@@ -29,13 +30,24 @@ public class Schedule {
     private Event event;
 
     @OneToOne(mappedBy = "schedule",cascade = CascadeType.ALL)
+    @JsonIgnore
     private Student student;
 
     @Column(name = "isAvailable")
     private Boolean isAvailable;
 
+    @Column(name = "isCompleted")
+    private int isCompleted;
+
     @Column(name = "createdDate", nullable = false, updatable = false)
-    @Temporal(value = TemporalType.DATE)
+    //@Temporal(value = TemporalType.TIMESTAMP)
     @CreationTimestamp
-    private Date createdDate;
+    private LocalDateTime createdDate;
+
+
+
+    @Override
+    public int compareTo(Object o) {
+        return 0;
+    }
 }

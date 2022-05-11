@@ -4,8 +4,10 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.PriorityQueue;
 
 @Data
 @Entity
@@ -38,5 +40,5 @@ public class Event {
     private Integer workersNum;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-    private List<Schedule> schedules;
+    private Collection<Schedule> schedules = new PriorityQueue<>();
 }

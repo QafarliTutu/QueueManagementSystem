@@ -4,15 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.asoiu.QueueManagementSystem.dto.EventDto;
 import org.asoiu.QueueManagementSystem.entity.Event;
+import org.asoiu.QueueManagementSystem.entity.Schedule;
 import org.asoiu.QueueManagementSystem.repository.EventRepository;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Log4j2
 @Service
@@ -43,17 +42,22 @@ public class EventService {
     }
 
     public Event findEventById(Long eventId){
-        log.info("STARTED: " + " findById ");
+        log.info("STARTED: " + " findEventById ");
         log.info("ID: " + eventId);
         Event event = eventRepo.findById(eventId).orElseThrow(()-> new RuntimeException("Event not found with ID: " + eventId));
-        log.info("FINISHED: " + " findById ");
+        log.info("EVENT: " + event);
+        log.info("FINISHED: " + " findEventById ");
         return  event;
     }
 
     public List<Event> getAllEvents(){
         log.info("STARTED: " + " getAllEvents ");
         List<Event> events = eventRepo.findAll();
+        log.info("EVENTS: " + events);
         log.info("FINISHED: " + " getAllEvents ");
         return events;
     }
+
+
+
 }

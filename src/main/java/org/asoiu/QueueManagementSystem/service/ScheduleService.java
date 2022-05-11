@@ -8,10 +8,12 @@ import org.asoiu.QueueManagementSystem.entity.Student;
 import org.asoiu.QueueManagementSystem.repository.EventRepository;
 import org.asoiu.QueueManagementSystem.repository.ScheduleRepository;
 import org.asoiu.QueueManagementSystem.repository.StudentRepository;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -21,6 +23,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepo;
     private final StudentRepository studentRepo;
     private final EventRepository eventRepo;
+    private final EmailSenderService emailSenderService;
 
     public List<Schedule> createSchedule(Event event){
         log.info("STARTED: " + " createSchedule ");
@@ -30,17 +33,19 @@ public class ScheduleService {
         calendar.setTime(event.getStartDate());
         calendar.add(Calendar.HOUR_OF_DAY, 9);
         calendar2.setTime(event.getStartDate());
-        calendar2.add(Calendar.HOUR_OF_DAY, 18);
+        calendar2.add(Calendar.HOUR_OF_DAY, 17);
+        calendar2.add(Calendar.MINUTE, 45);
         List<Schedule> scheduleList = new ArrayList<>();
 
         for (int i = 0; ; i++) {
             Schedule schedule = new Schedule();
             schedule.setEvent(event);
             schedule.setIsAvailable(true);
-            calendar.add(Calendar.MINUTE, i * 15);
-            schedule.setAvailableDate(calendar.getTime());
+            schedule.setIsCompleted(0);
+            calendar.add(Calendar.MINUTE, 15);
+            schedule.setAvailableDate(LocalDateTime.ofInstant(calendar.toInstant(), calendar.getTimeZone().toZoneId()));
             scheduleList.add(schedule);
-            if (calendar.getTime().getTime() > calendar2.getTime().getTime()) break;
+            if (calendar.getTime().getTime() >= calendar2.getTime().getTime()) break;
         }
         log.info("SCHEDULE LIST: " + scheduleList);
         log.info("FINISHED: " + " createSchedule ");
@@ -51,7 +56,6 @@ public class ScheduleService {
     public List<Schedule> getAllSchedule(Long eventId){
         log.info("STARTED: " + " getAllSchedule ");
         log.info("EVENTID: " + eventId);
-
         Event event = eventRepo.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found with id " + eventId));
         List<Schedule> scheduleList = scheduleRepo.findAllByEvent(event);
         log.info("SCHEDULE LIST: " + scheduleList);
@@ -60,21 +64,69 @@ public class ScheduleService {
     }
 
     public Schedule makeReserve(Long studentId, Long scheduleId){
+        log.info("STARTED: " + " makeReserve ");
+        log.info("STUDENTID: " + studentId + " SCHEDULEID: " + scheduleId);
         Student student = studentRepo.findById(studentId).orElseThrow(()-> new RuntimeException("Student not found with ID: " + studentId));
         Schedule schedule = scheduleRepo.findById(scheduleId).orElseThrow(()-> new RuntimeException("Schedule not found with ID: " + scheduleId));
         schedule.setStudent(student);
         schedule.setIsAvailable(false);
+        student.setSchedule(schedule);
         scheduleRepo.save(schedule);
+
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setTo(student.getEmail());
+        mail.setSubject("Rezervasiya məlumatlarının təqdim olunması.");
+        mail.setFrom("myfirstcalculatorapp@gmail.com");
+        mail.setText("Rezervasiya prosesi uğurla icra olundu. Sizin qeydiyyat üçün yaxınlaşma vaxtınız: " + schedule.getAvailableDate());
+//        emailSenderService.sendEmail(mail);
+
+        log.info("STUDENT: " + student);
+        log.info("SCHEDULE: " + schedule);
+        log.info("MAIL SENT: " + mail);
+        log.info("FINISHED: " + " makeReserve ");
         return schedule;
     }
 
     public Schedule cancelSchedule(Long scheduleId){
+        log.info("STARTED: " + " cancelSchedule ");
+        log.info(" SCHEDULEID: " + scheduleId);
         Schedule schedule = scheduleRepo.findById(scheduleId).orElseThrow(()-> new RuntimeException("Schedule not found with ID: " + scheduleId));
         schedule.setIsAvailable(true);
         schedule.setStudent(null);
+        log.info("SCHEDULE: " + schedule);
+        log.info("FINISHED: " + " cancelSchedule ");
         return schedule;
     }
 
 
+    public PriorityQueue<Schedule> getQueue(Long eventId) {
+        List<Schedule> schedules = getAllSchedule(eventId)
+                .stream()
+                .filter(schedule -> !schedule.getIsAvailable())
+                .filter(schedule -> schedule.getIsCompleted()==0)
+                .collect(Collectors.toList());
+
+        PriorityQueue<Schedule> queue = new PriorityQueue<>(schedules);
+        return queue;
+    }
+
+    public Schedule completeReservation(Long scheduleId){
+        Optional<Schedule> byId = scheduleRepo.findById(scheduleId);
+        byId.ifPresent(schedule -> {
+            schedule.setIsCompleted(1);
+            scheduleRepo.save(schedule);
+        });
+
+        return getQueue(byId.get().getEvent().getEventId()).peek();
+    }
+
+    public Schedule declineReservation(Long scheduleId){
+        Optional<Schedule> byId = scheduleRepo.findById(scheduleId);
+        byId.ifPresent(schedule -> {
+            schedule.setIsCompleted(-1);
+            scheduleRepo.save(schedule);
+        });
+        return getQueue(byId.get().getEvent().getEventId()).peek();
+    }
 
 }

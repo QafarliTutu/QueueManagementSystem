@@ -20,19 +20,29 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
 
     public Employee register(RegisterEmployeeDto registerEmployeeDto) {
+        log.info("STARTED: " + " register ");
+        log.info("REGISTEREMPLOYEEDTO: " + registerEmployeeDto);
         Optional<Employee> opEmployee = employeeRepository.findEmployeeByEmail(registerEmployeeDto.getEmail());
         if (opEmployee.isPresent())
-            throw new RuntimeException("employee already exists with email" + registerEmployeeDto.getEmail());
+            throw new RuntimeException("Employee already exists with email" + registerEmployeeDto.getEmail());
         ModelMapper mapper = new ModelMapper();
         Employee employee = mapper.map(registerEmployeeDto, Employee.class);
+
+        log.info("EMPLOYEE: " + employee);
+        log.info("FINISHED: " + " register ");
         return employeeRepository.save(employee);
     }
 
     public Employee login(LoginEmployeeDto loginEmployeeDto) {
+        log.info("STARTED: " + " login ");
+        log.info("LOGINEMPLOYEEDTO: " + loginEmployeeDto);
         Employee employee = employeeRepository.findEmployeeByEmail(loginEmployeeDto.getEmail())
-                .orElseThrow(() -> new RuntimeException("employee not found with id: " + loginEmployeeDto.getEmail()));
+                .orElseThrow(() -> new RuntimeException("Employee not found with id: " + loginEmployeeDto.getEmail()));
         if (!employee.getPassword().equals(loginEmployeeDto.getPassword()))
             throw new RuntimeException("password doesn't match");
+
+        log.info("EMPLOYEE: " + employee);
+        log.info("FINISHED: " + " login ");
         return employee;
     }
 }
