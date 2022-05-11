@@ -4,9 +4,8 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 import java.util.PriorityQueue;
 
 @Data
@@ -24,17 +23,14 @@ public class Event {
     private String name;
 
     @Column(name = "createdDate", nullable = false, updatable = false)
-    @Temporal(value = TemporalType.DATE)
     @CreationTimestamp
-    private Date createdDate;
+    private LocalDateTime createdDate;
 
     @Column(name = "startDate")
-    @Temporal(value = TemporalType.DATE)
-    private Date startDate;
+    private LocalDateTime startDate;
 
     @Column(name = "endDate")
-    @Temporal(value = TemporalType.DATE)
-    private Date endDate;
+    private LocalDateTime endDate;
 
     @Column(name = "workersNum")
     private Integer workersNum;

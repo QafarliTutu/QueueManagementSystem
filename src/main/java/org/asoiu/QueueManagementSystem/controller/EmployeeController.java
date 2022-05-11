@@ -6,6 +6,7 @@ import org.asoiu.QueueManagementSystem.dto.LoginEmployeeDto;
 import org.asoiu.QueueManagementSystem.dto.RegisterEmployeeDto;
 import org.asoiu.QueueManagementSystem.dto.ServiceResponse;
 import org.asoiu.QueueManagementSystem.entity.Employee;
+import org.asoiu.QueueManagementSystem.exception.MyExceptionClass;
 import org.asoiu.QueueManagementSystem.service.EmployeeService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +22,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @PostMapping("/register")
-    public ServiceResponse<Employee> register(@RequestBody RegisterEmployeeDto registerEmployeeDto) {
+    public ServiceResponse<Employee> register(@RequestBody RegisterEmployeeDto registerEmployeeDto) throws MyExceptionClass {
         log.info("CALLED: " + " register " + "REQUEST BODY= " + registerEmployeeDto.toString());
         Employee employee = employeeService.register(registerEmployeeDto);
         return ServiceResponse.<Employee>builder()

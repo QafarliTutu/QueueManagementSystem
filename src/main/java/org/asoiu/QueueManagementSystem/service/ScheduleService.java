@@ -12,6 +12,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,9 +31,11 @@ public class ScheduleService {
         log.info("EVENT: " + event);
         Calendar calendar = Calendar.getInstance();
         Calendar calendar2 = Calendar.getInstance();
-        calendar.setTime(event.getStartDate());
+        calendar.setTime(java.util.Date.from(event.getStartDate().atZone(ZoneId.systemDefault())
+                        .toInstant()));
         calendar.add(Calendar.HOUR_OF_DAY, 9);
-        calendar2.setTime(event.getStartDate());
+        calendar2.setTime(java.util.Date.from(event.getStartDate().atZone(ZoneId.systemDefault())
+                .toInstant()));
         calendar2.add(Calendar.HOUR_OF_DAY, 17);
         calendar2.add(Calendar.MINUTE, 45);
         List<Schedule> scheduleList = new ArrayList<>();
@@ -78,7 +81,7 @@ public class ScheduleService {
         mail.setSubject("Rezervasiya məlumatlarının təqdim olunması.");
         mail.setFrom("myfirstcalculatorapp@gmail.com");
         mail.setText("Rezervasiya prosesi uğurla icra olundu. Sizin qeydiyyat üçün yaxınlaşma vaxtınız: " + schedule.getAvailableDate());
-//        emailSenderService.sendEmail(mail);
+        emailSenderService.sendEmail(mail);
 
         log.info("STUDENT: " + student);
         log.info("SCHEDULE: " + schedule);
@@ -89,7 +92,7 @@ public class ScheduleService {
 
     public Schedule cancelSchedule(Long scheduleId){
         log.info("STARTED: " + " cancelSchedule ");
-        log.info(" SCHEDULEID: " + scheduleId);
+        log.info("SCHEDULEID: " + scheduleId);
         Schedule schedule = scheduleRepo.findById(scheduleId).orElseThrow(()-> new RuntimeException("Schedule not found with ID: " + scheduleId));
         schedule.setIsAvailable(true);
         schedule.setStudent(null);

@@ -14,12 +14,21 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class WholeAppException extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = {Exception.class})
-    protected ResponseEntity<Object> handleConflict(Exception ex, WebRequest request){
+    @ExceptionHandler(value = {MyExceptionClass.class})
+    protected ResponseEntity<Object> handleConflict(MyExceptionClass ex, WebRequest request){
         ServiceResponse<String> bodyOfResponse = new ServiceResponse<>();
         bodyOfResponse.setSuccessful(false);
         bodyOfResponse.setMessage("Something went wrong!");
         bodyOfResponse.setPayload(ex.getMessage());
+        return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.CONFLICT, request);
+    }
+
+    @ExceptionHandler(value = {Exception.class})
+    protected ResponseEntity<Object> handleAllConflicts(Exception ex, WebRequest request){
+        ServiceResponse<String> bodyOfResponse = new ServiceResponse<>();
+        bodyOfResponse.setSuccessful(false);
+        bodyOfResponse.setMessage(ex.getMessage());
+        bodyOfResponse.setPayload("Something went wrong!");
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.CONFLICT, request);
     }
 }

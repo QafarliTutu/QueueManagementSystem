@@ -21,7 +21,6 @@ public class Schedule implements Comparable{
     private Long scheduleId;
 
     @Column(name = "availableDate")
-    //@Temporal(value = TemporalType.TIMESTAMP)
     private LocalDateTime availableDate;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -40,11 +39,8 @@ public class Schedule implements Comparable{
     private int isCompleted;
 
     @Column(name = "createdDate", nullable = false, updatable = false)
-    //@Temporal(value = TemporalType.TIMESTAMP)
     @CreationTimestamp
     private LocalDateTime createdDate;
-
-
 
     @Override
     public int compareTo(Object o) {

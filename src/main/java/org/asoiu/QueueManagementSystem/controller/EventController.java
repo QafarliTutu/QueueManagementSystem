@@ -35,15 +35,23 @@ public class EventController {
     }
 
     @GetMapping("/all")
-    public List<Event> getAllEvents(){
+    public ServiceResponse<List<Event>> getAllEvents(){
         log.info("CALLED: " + " getAllEvents " );
-        return eventService.getAllEvents();
+        List<Event> allEvents = eventService.getAllEvents();
+        return ServiceResponse.<List<Event>>builder()
+                .successful(true)
+                .payload(allEvents)
+                .build();
     }
 
     @GetMapping("/{eventId}")
-    public Event findEventById(@PathVariable Long eventId) {
+    public ServiceResponse<Event> findEventById(@PathVariable Long eventId) {
         log.info("CALLED: " + " findEventById " + "PATH VARIABLE= " + eventId);
-        return eventService.findEventById(eventId);
+        Event event = eventService.findEventById(eventId);
+        return ServiceResponse.<Event>builder()
+                .successful(true)
+                .payload(event)
+                .build();
     }
 
 

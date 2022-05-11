@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -34,9 +35,8 @@ public class Student {
     private Schedule schedule;
 
     @Column(name = "createdDate", nullable = false, updatable = false)
-    @Temporal(value = TemporalType.DATE)
     @CreationTimestamp
-    private Date createdDate;
+    private LocalDateTime createdDate;
 
 
 }

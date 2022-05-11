@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Log4j2
@@ -27,10 +28,9 @@ public class EventService {
         Event event = new Event();
         event.setName(eventDto.getName());
 
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-
-        event.setStartDate(formatter.parse(eventDto.getStartDate()));
-        event.setEndDate(formatter.parse(eventDto.getEndDate()));
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        event.setStartDate(LocalDateTime.parse(eventDto.getStartDate(), dtf));
+        event.setEndDate(LocalDateTime.parse(eventDto.getEndDate(), dtf));
 
         event.setWorkersNum(Integer.valueOf(eventDto.getWorkersNum()));
         event.setSchedules(scheduleService.createSchedule(event));

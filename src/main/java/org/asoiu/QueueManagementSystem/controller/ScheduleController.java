@@ -3,6 +3,8 @@ package org.asoiu.QueueManagementSystem.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.asoiu.QueueManagementSystem.dto.ReserveDto;
+import org.asoiu.QueueManagementSystem.dto.ServiceResponse;
+import org.asoiu.QueueManagementSystem.entity.Employee;
 import org.asoiu.QueueManagementSystem.entity.Schedule;
 import org.asoiu.QueueManagementSystem.service.ScheduleService;
 import org.springframework.stereotype.Repository;
@@ -20,36 +22,60 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @GetMapping("/all/{eventId}")
-    public List<Schedule> getAllSchedules(@PathVariable Long eventId) {
+    public ServiceResponse<List<Schedule>> getAllSchedules(@PathVariable Long eventId) {
         log.info("CALLED: " + " getAllSchedules " + "PATH VARIABLE= " + eventId);
-        return scheduleService.getAllSchedule(eventId);
+        List<Schedule> schedules = scheduleService.getAllSchedule(eventId);
+        return ServiceResponse.<List<Schedule>>builder()
+                .successful(true)
+                .payload(schedules)
+                .build();
     }
 
     @PostMapping("/reserve")
-    public Schedule makeReserve(@RequestBody ReserveDto reserveDto) {
+    public ServiceResponse<Schedule> makeReserve(@RequestBody ReserveDto reserveDto) {
         log.info("CALLED: " + " makeReserve " + "REQUEST BODY= " + reserveDto.toString());
-        return scheduleService.makeReserve(reserveDto.getStudentId(), reserveDto.getScheduleId());
+        Schedule schedule = scheduleService.makeReserve(reserveDto.getStudentId(), reserveDto.getScheduleId());
+        return ServiceResponse.<Schedule>builder()
+                .successful(true)
+                .payload(schedule)
+                .build();
     }
 
     @PostMapping("/cancel")
-    public Schedule cancel(@RequestBody ReserveDto reserveDto) {
+    public ServiceResponse<Schedule> cancel(@RequestBody ReserveDto reserveDto) {
         log.info("CALLED: " + " cancel " + "REQUEST BODY= " + reserveDto.toString());
-        return scheduleService.cancelSchedule(reserveDto.getScheduleId());
+        Schedule schedule = scheduleService.cancelSchedule(reserveDto.getScheduleId());
+        return ServiceResponse.<Schedule>builder()
+                .successful(true)
+                .payload(schedule)
+                .build();
     }
 
     @GetMapping("/queue/{eventId}")
-    public PriorityQueue<Schedule> getQueue(@PathVariable Long eventId){
-        return scheduleService.getQueue(eventId);
+    public ServiceResponse<PriorityQueue<Schedule>> getQueue(@PathVariable Long eventId){
+        PriorityQueue<Schedule> queue = scheduleService.getQueue(eventId);
+        return ServiceResponse.<PriorityQueue<Schedule>>builder()
+                .successful(true)
+                .payload(queue)
+                .build();
     }
 
     @GetMapping("/queue/complete/{scheduleId}")
-    public Schedule completeReservation(@PathVariable Long scheduleId){
-        return scheduleService.completeReservation(scheduleId);
+    public ServiceResponse<Schedule> completeReservation(@PathVariable Long scheduleId){
+        Schedule schedule = scheduleService.completeReservation(scheduleId);
+        return ServiceResponse.<Schedule>builder()
+                .successful(true)
+                .payload(schedule)
+                .build();
     }
 
     @GetMapping("/queue/decline/{scheduleId}")
-    public Schedule declineReservation(@PathVariable Long scheduleId){
-        return scheduleService.declineReservation(scheduleId);
+    public ServiceResponse<Schedule> declineReservation(@PathVariable Long scheduleId){
+        Schedule schedule = scheduleService.declineReservation(scheduleId);
+        return ServiceResponse.<Schedule>builder()
+                .successful(true)
+                .payload(schedule)
+                .build();
     }
 
 
