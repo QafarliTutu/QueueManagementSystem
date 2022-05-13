@@ -1,6 +1,7 @@
 package org.asoiu.QueueManagementSystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -31,8 +32,8 @@ public class Student {
     @Column(name = "password")
     private String password;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "schedule_id")
+    @OneToOne(mappedBy = "student",cascade = CascadeType.ALL)
+    @JsonIgnore
     private Schedule schedule;
 
     @Column(name = "createdDate", nullable = false, updatable = false)

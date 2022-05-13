@@ -30,8 +30,8 @@ public class Schedule implements Comparable{
     @JsonIgnore
     private Event event;
 
-    @OneToOne(mappedBy = "schedule",cascade = CascadeType.ALL)
-    @JsonIgnore
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "student_id")
     private Student student;
 
     @Column(name = "isAvailable")
