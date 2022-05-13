@@ -13,4 +13,5 @@ public class EventDto {
     private String startDate;
     private String endDate;
     private String workersNum;
+    private String description;
 }
