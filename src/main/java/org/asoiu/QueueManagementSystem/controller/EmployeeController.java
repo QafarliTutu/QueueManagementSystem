@@ -32,7 +32,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/login")
-    public ServiceResponse<Employee> login(@RequestBody LoginEmployeeDto loginEmployeeDto) {
+    public ServiceResponse<Employee> login(@RequestBody LoginEmployeeDto loginEmployeeDto) throws MyExceptionClass {
         log.info("CALLED: " + " login " + "REQUEST BODY= " + loginEmployeeDto.toString());
         Employee employee = employeeService.login(loginEmployeeDto);
         return ServiceResponse.<Employee>builder()

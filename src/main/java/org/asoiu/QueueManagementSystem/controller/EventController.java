@@ -6,6 +6,7 @@ import org.asoiu.QueueManagementSystem.dto.ServiceResponse;
 import org.asoiu.QueueManagementSystem.entity.Employee;
 import org.asoiu.QueueManagementSystem.entity.Event;
 import org.asoiu.QueueManagementSystem.entity.Schedule;
+import org.asoiu.QueueManagementSystem.exception.MyExceptionClass;
 import org.asoiu.QueueManagementSystem.service.EventService;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,7 +46,7 @@ public class EventController {
     }
 
     @GetMapping("/{eventId}")
-    public ServiceResponse<EventDto> findEventById(@PathVariable Long eventId) {
+    public ServiceResponse<EventDto> findEventById(@PathVariable Long eventId) throws MyExceptionClass {
         log.info("CALLED: " + " findEventById " + "PATH VARIABLE= " + eventId);
         EventDto eventDto = eventService.findEventById(eventId);
         return ServiceResponse.<EventDto>builder()

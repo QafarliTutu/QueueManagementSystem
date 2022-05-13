@@ -35,13 +35,13 @@ public class EmployeeService {
         return employeeRepository.save(employee);
     }
 
-    public Employee login(LoginEmployeeDto loginEmployeeDto) {
+    public Employee login(LoginEmployeeDto loginEmployeeDto) throws MyExceptionClass {
         log.info("STARTED: " + " login ");
         log.info("LOGIN EMPLOYEE DTO: " + loginEmployeeDto);
         Employee employee = employeeRepository.findEmployeeByEmail(loginEmployeeDto.getEmail())
-                .orElseThrow(() -> new RuntimeException("Employee not found with id: " + loginEmployeeDto.getEmail()));
+                .orElseThrow(() -> new MyExceptionClass("Employee not found with ID: " + loginEmployeeDto.getEmail()));
         if (!employee.getPassword().equals(loginEmployeeDto.getPassword()))
-            throw new RuntimeException("Password doesn't match");
+            throw new RuntimeException("Password doesn't match.");
 
         log.info("EMPLOYEE: " + employee);
         log.info("FINISHED: " + " login ");

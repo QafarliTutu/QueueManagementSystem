@@ -6,6 +6,7 @@ import org.asoiu.QueueManagementSystem.dto.LoginStudentDto;
 import org.asoiu.QueueManagementSystem.dto.RegisterStudentDto;
 import org.asoiu.QueueManagementSystem.entity.Schedule;
 import org.asoiu.QueueManagementSystem.entity.Student;
+import org.asoiu.QueueManagementSystem.exception.MyExceptionClass;
 import org.asoiu.QueueManagementSystem.repository.ScheduleRepository;
 import org.asoiu.QueueManagementSystem.repository.StudentRepository;
 
@@ -21,14 +22,14 @@ import java.util.Optional;
 public class StudentService {
 
     private final StudentRepository studentRepository;
-    private final ScheduleRepository scheduleRepository;
 
-    public Student register(RegisterStudentDto registerStudentDto) {
+
+    public Student register(RegisterStudentDto registerStudentDto) throws MyExceptionClass {
         log.info("STARTED: " + " register ");
         log.info("REGISTER STUDENT DTO: " + registerStudentDto);
         Optional<Student> opStudent = studentRepository.findStudentByEmail(registerStudentDto.getEmail());
         if (opStudent.isPresent())
-            throw new RuntimeException("Student already exists with email" + registerStudentDto.getEmail());
+            throw new MyExceptionClass("Student already exists with email: " + registerStudentDto.getEmail());
         ModelMapper mapper = new ModelMapper();
         Student student = mapper.map(registerStudentDto, Student.class);
         log.info("STUDENT: " + student);
@@ -36,13 +37,13 @@ public class StudentService {
         return studentRepository.save(student);
     }
 
-    public Student login(LoginStudentDto loginStudentDto) {
+    public Student login(LoginStudentDto loginStudentDto) throws MyExceptionClass {
         log.info("STARTED: " + " login ");
         log.info("LOGIN STUDENT DTO: " + loginStudentDto);
         Student student = studentRepository.findStudentByEmail(loginStudentDto.getEmail())
-                .orElseThrow(() -> new RuntimeException("Student not found with id: " + loginStudentDto.getEmail()));
+                .orElseThrow(() -> new MyExceptionClass("Student not found with ID: " + loginStudentDto.getEmail()));
         if (!student.getPassword().equals(loginStudentDto.getPassword()))
-            throw new RuntimeException("Password doesn't match");
+            throw new RuntimeException("Password doesn't match.");
         log.info("STUDENT: " + student);
         log.info("FINISHED: " + " login ");
         return student;

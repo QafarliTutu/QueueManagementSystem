@@ -7,6 +7,7 @@ import org.asoiu.QueueManagementSystem.dto.ScheduleDto;
 import org.asoiu.QueueManagementSystem.entity.Event;
 import org.asoiu.QueueManagementSystem.entity.Schedule;
 import org.asoiu.QueueManagementSystem.entity.Student;
+import org.asoiu.QueueManagementSystem.exception.MyExceptionClass;
 import org.asoiu.QueueManagementSystem.repository.EventRepository;
 import org.asoiu.QueueManagementSystem.repository.ScheduleRepository;
 import org.asoiu.QueueManagementSystem.repository.StudentRepository;
@@ -69,30 +70,30 @@ public class ScheduleService {
         return 9 <= hour && hour < 18;
     }
 
-    public Map<LocalDate, List<ScheduleDto>> getAllSchedule(Long eventId){
+    public Map<LocalDate, List<ScheduleDto>> getAllSchedule(Long eventId) throws MyExceptionClass {
         log.info("STARTED: " + " getAllSchedule ");
         log.info("EVENT ID: " + eventId);
-        Event event = eventRepo.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found with id " + eventId));
+        Event event = eventRepo.findById(eventId).orElseThrow(() -> new MyExceptionClass("Event not found with ID: " + eventId));
         List<Schedule> scheduleList = scheduleRepo.findAllByEvent(event);
         ModelMapper mapper = new ModelMapper();
-        List<ScheduleDto> scheduleDtos = new ArrayList<>();
+        List<ScheduleDto> scheduleDtoList = new ArrayList<>();
 
         scheduleList.stream().forEach(schedule -> {
             ScheduleDto scheduleDto = new ScheduleDto();
             mapper.map(schedule,scheduleDto);
             scheduleDto.setAvailableDay(scheduleDto.getAvailableDate().toLocalDate());
-            scheduleDtos.add(scheduleDto);
+            scheduleDtoList.add(scheduleDto);
         });
-        log.info("SCHEDULE LIST: " + scheduleList);
+        log.info("SCHEDULE DTO LIST: " + scheduleDtoList);
         log.info("FINISHED: " + " getAllSchedule ");
-        return scheduleDtos.stream().collect(Collectors.groupingBy(ScheduleDto::getAvailableDay));
+        return scheduleDtoList.stream().collect(Collectors.groupingBy(ScheduleDto::getAvailableDay));
     }
 
-    public Schedule makeReserve(Long studentId, Long scheduleId){
+    public Schedule makeReserve(Long studentId, Long scheduleId) throws MyExceptionClass {
         log.info("STARTED: " + " makeReserve ");
         log.info("STUDENT ID: " + studentId + " SCHEDULE ID: " + scheduleId);
-        Student student = studentRepo.findById(studentId).orElseThrow(()-> new RuntimeException("Student not found with ID: " + studentId));
-        Schedule schedule = scheduleRepo.findById(scheduleId).orElseThrow(()-> new RuntimeException("Schedule not found with ID: " + scheduleId));
+        Student student = studentRepo.findById(studentId).orElseThrow(()-> new MyExceptionClass("Student not found with ID: " + studentId));
+        Schedule schedule = scheduleRepo.findById(scheduleId).orElseThrow(()-> new MyExceptionClass("Schedule not found with ID: " + scheduleId));
         schedule.setStudent(student);
         schedule.setIsAvailable(false);
         student.setSchedule(schedule);
@@ -112,10 +113,10 @@ public class ScheduleService {
         return schedule;
     }
 
-    public Schedule cancelSchedule(Long scheduleId){
+    public Schedule cancelSchedule(Long scheduleId) throws MyExceptionClass {
         log.info("STARTED: " + " cancelSchedule ");
         log.info("SCHEDULE ID: " + scheduleId);
-        Schedule schedule = scheduleRepo.findById(scheduleId).orElseThrow(()-> new RuntimeException("Schedule not found with ID: " + scheduleId));
+        Schedule schedule = scheduleRepo.findById(scheduleId).orElseThrow(()-> new MyExceptionClass("Schedule not found with ID: " + scheduleId));
         schedule.setIsAvailable(true);
         schedule.setStudent(null);
         log.info("SCHEDULE: " + schedule);
@@ -124,18 +125,19 @@ public class ScheduleService {
     }
 
 
-    public PriorityQueue<Schedule> getQueue(Long eventId) {
-//        List<Schedule> schedules = getAllSchedule(eventId)
-//                .stream()
-//                .filter(schedule -> !schedule.getIsAvailable())
-//                .filter(schedule -> schedule.getIsCompleted()==0)
-//                .collect(Collectors.toList());
-//
-//        PriorityQueue<Schedule> queue = new PriorityQueue<>(schedules);
-        return null;//queue;
+    public PriorityQueue<Schedule> getQueue(Long eventId) throws MyExceptionClass {
+        Event event = eventRepo.findById(eventId).orElseThrow(() -> new MyExceptionClass("Event not found with ID: " + eventId));
+        List<Schedule> schedules = scheduleRepo.findAllByEvent(event)
+                .stream()
+                .filter(schedule -> !schedule.getIsAvailable())
+                .filter(schedule -> schedule.getIsCompleted() == 0)
+                .collect(Collectors.toList());
+
+        PriorityQueue<Schedule> queue = new PriorityQueue<>(schedules);
+        return queue;
     }
 
-    public Schedule completeReservation(Long scheduleId){
+    public Schedule completeReservation(Long scheduleId) throws MyExceptionClass {
         Optional<Schedule> byId = scheduleRepo.findById(scheduleId);
         byId.ifPresent(schedule -> {
             schedule.setIsCompleted(1);
@@ -145,7 +147,7 @@ public class ScheduleService {
         return getQueue(byId.get().getEvent().getEventId()).peek();
     }
 
-    public Schedule declineReservation(Long scheduleId){
+    public Schedule declineReservation(Long scheduleId) throws MyExceptionClass {
         Optional<Schedule> byId = scheduleRepo.findById(scheduleId);
         byId.ifPresent(schedule -> {
             schedule.setIsCompleted(-1);

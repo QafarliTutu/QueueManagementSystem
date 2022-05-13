@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import org.asoiu.QueueManagementSystem.dto.EventDto;
 import org.asoiu.QueueManagementSystem.entity.Event;
 import org.asoiu.QueueManagementSystem.entity.Schedule;
+import org.asoiu.QueueManagementSystem.exception.MyExceptionClass;
 import org.asoiu.QueueManagementSystem.repository.EventRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -43,11 +44,11 @@ public class EventService {
 
     }
 
-    public EventDto findEventById(Long eventId){
+    public EventDto findEventById(Long eventId) throws MyExceptionClass {
         log.info("STARTED: " + " findEventById ");
         log.info("ID: " + eventId);
         ModelMapper modelMapper = new ModelMapper();
-        Event event = eventRepo.findById(eventId).orElseThrow(()-> new RuntimeException("Event not found with ID: " + eventId));
+        Event event = eventRepo.findById(eventId).orElseThrow(()-> new MyExceptionClass("Event not found with ID: " + eventId));
         log.info("EVENT: " + event);
         log.info("FINISHED: " + " findEventById ");
         return  modelMapper.map(event,EventDto.class);
