@@ -3,6 +3,7 @@ package org.asoiu.QueueManagementSystem.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.asoiu.QueueManagementSystem.dto.ReserveDto;
+import org.asoiu.QueueManagementSystem.dto.ScheduleDto;
 import org.asoiu.QueueManagementSystem.dto.ServiceResponse;
 import org.asoiu.QueueManagementSystem.entity.Employee;
 import org.asoiu.QueueManagementSystem.entity.Schedule;
@@ -10,7 +11,9 @@ import org.asoiu.QueueManagementSystem.service.ScheduleService;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 @Log4j2
@@ -22,10 +25,10 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @GetMapping("/all/{eventId}")
-    public ServiceResponse<List<Schedule>> getAllSchedules(@PathVariable Long eventId) {
+    public ServiceResponse<Map<LocalDate, List<ScheduleDto>>> getAllSchedules(@PathVariable Long eventId) {
         log.info("CALLED: " + " getAllSchedules " + "PATH VARIABLE= " + eventId);
-        List<Schedule> schedules = scheduleService.getAllSchedule(eventId);
-        return ServiceResponse.<List<Schedule>>builder()
+        Map<LocalDate, List<ScheduleDto>> schedules = scheduleService.getAllSchedule(eventId);
+        return ServiceResponse.<Map<LocalDate, List<ScheduleDto>>>builder()
                 .successful(true)
                 .payload(schedules)
                 .build();

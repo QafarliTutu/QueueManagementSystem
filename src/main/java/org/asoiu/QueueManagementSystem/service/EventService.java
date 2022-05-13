@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.asoiu.QueueManagementSystem.dto.EventDto;
 import org.asoiu.QueueManagementSystem.entity.Event;
+import org.asoiu.QueueManagementSystem.entity.Schedule;
 import org.asoiu.QueueManagementSystem.repository.EventRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -23,7 +25,7 @@ public class EventService {
 
     public Event createEvent(EventDto eventDto) throws ParseException {
         log.info("STARTED: " + " createEvent ");
-        log.info("EVENTDTO: " + eventDto);
+        log.info("EVENT DTO: " + eventDto);
         Event event = new Event();
         event.setName(eventDto.getName());
 
@@ -34,20 +36,21 @@ public class EventService {
         event.setWorkersNum(Integer.valueOf(eventDto.getWorkersNum()));
         event.setDescription(eventDto.getDescription());
         event.setSchedules(scheduleService.createSchedule(event));
-        
+
         log.info("EVENT: " + event);
         log.info("FINISHED: " + " createEvent ");
         return event;
 
     }
 
-    public Event findEventById(Long eventId){
+    public EventDto findEventById(Long eventId){
         log.info("STARTED: " + " findEventById ");
         log.info("ID: " + eventId);
+        ModelMapper modelMapper = new ModelMapper();
         Event event = eventRepo.findById(eventId).orElseThrow(()-> new RuntimeException("Event not found with ID: " + eventId));
         log.info("EVENT: " + event);
         log.info("FINISHED: " + " findEventById ");
-        return  event;
+        return  modelMapper.map(event,EventDto.class);
     }
 
     public List<Event> getAllEvents(){

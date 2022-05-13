@@ -45,12 +45,12 @@ public class EventController {
     }
 
     @GetMapping("/{eventId}")
-    public ServiceResponse<Event> findEventById(@PathVariable Long eventId) {
+    public ServiceResponse<EventDto> findEventById(@PathVariable Long eventId) {
         log.info("CALLED: " + " findEventById " + "PATH VARIABLE= " + eventId);
-        Event event = eventService.findEventById(eventId);
-        return ServiceResponse.<Event>builder()
+        EventDto eventDto = eventService.findEventById(eventId);
+        return ServiceResponse.<EventDto>builder()
                 .successful(true)
-                .payload(event)
+                .payload(eventDto)
                 .build();
     }
 

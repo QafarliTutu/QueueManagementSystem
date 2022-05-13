@@ -4,20 +4,24 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.asoiu.QueueManagementSystem.dto.LoginStudentDto;
 import org.asoiu.QueueManagementSystem.dto.RegisterStudentDto;
+import org.asoiu.QueueManagementSystem.entity.Schedule;
 import org.asoiu.QueueManagementSystem.entity.Student;
+import org.asoiu.QueueManagementSystem.repository.ScheduleRepository;
 import org.asoiu.QueueManagementSystem.repository.StudentRepository;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Log4j2
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class StudentService {
 
     private final StudentRepository studentRepository;
+    private final ScheduleRepository scheduleRepository;
 
     public Student register(RegisterStudentDto registerStudentDto) {
         log.info("STARTED: " + " register ");

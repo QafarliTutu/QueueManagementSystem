@@ -1,18 +1,23 @@
 package org.asoiu.QueueManagementSystem.service;
 
+
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.asoiu.QueueManagementSystem.dto.ScheduleDto;
 import org.asoiu.QueueManagementSystem.entity.Event;
 import org.asoiu.QueueManagementSystem.entity.Schedule;
 import org.asoiu.QueueManagementSystem.entity.Student;
 import org.asoiu.QueueManagementSystem.repository.EventRepository;
 import org.asoiu.QueueManagementSystem.repository.ScheduleRepository;
 import org.asoiu.QueueManagementSystem.repository.StudentRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,25 +35,28 @@ public class ScheduleService {
         log.info("STARTED: " + " createSchedule ");
         log.info("EVENT: " + event);
         Calendar calendar = Calendar.getInstance();
+        calendar.setTime(java.util.Date.from(event.getStartDate().atZone(ZoneId.systemDefault()).toInstant()));
+     //   calendar.add(Calendar.HOUR_OF_DAY, 9);
+
         Calendar calendar2 = Calendar.getInstance();
-        calendar.setTime(java.util.Date.from(event.getStartDate().atZone(ZoneId.systemDefault())
-                        .toInstant()));
-        calendar.add(Calendar.HOUR_OF_DAY, 9);
-        calendar2.setTime(java.util.Date.from(event.getStartDate().atZone(ZoneId.systemDefault())
-                .toInstant()));
-        calendar2.add(Calendar.HOUR_OF_DAY, 17);
-        calendar2.add(Calendar.MINUTE, 45);
+        calendar2.setTime(java.util.Date.from(event.getEndDate().atZone(ZoneId.systemDefault()).toInstant()));
+       // calendar2.add(Calendar.HOUR_OF_DAY, 17);
+       // calendar2.add(Calendar.MINUTE, 45);
+
         List<Schedule> scheduleList = new ArrayList<>();
 
         for (int i = 0; ; i++) {
+            if (calendar.getTime().getTime() >= calendar2.getTime().getTime()) break;
             Schedule schedule = new Schedule();
             schedule.setEvent(event);
             schedule.setIsAvailable(true);
             schedule.setIsCompleted(0);
-            calendar.add(Calendar.MINUTE, 15);
             schedule.setAvailableDate(LocalDateTime.ofInstant(calendar.toInstant(), calendar.getTimeZone().toZoneId()));
+            calendar.add(Calendar.MINUTE, 15);
+            if (!isWorkHour(calendar.get(Calendar.HOUR_OF_DAY))) continue;
             scheduleList.add(schedule);
-            if (calendar.getTime().getTime() >= calendar2.getTime().getTime()) break;
+
+
         }
         log.info("SCHEDULE LIST: " + scheduleList);
         log.info("FINISHED: " + " createSchedule ");
@@ -56,14 +64,28 @@ public class ScheduleService {
 
     }
 
-    public List<Schedule> getAllSchedule(Long eventId){
+
+    private boolean isWorkHour(int hour) {
+        return 9 <= hour && hour < 18;
+    }
+
+    public Map<LocalDate, List<ScheduleDto>> getAllSchedule(Long eventId){
         log.info("STARTED: " + " getAllSchedule ");
         log.info("EVENT ID: " + eventId);
         Event event = eventRepo.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found with id " + eventId));
         List<Schedule> scheduleList = scheduleRepo.findAllByEvent(event);
+        ModelMapper mapper = new ModelMapper();
+        List<ScheduleDto> scheduleDtos = new ArrayList<>();
+
+        scheduleList.stream().forEach(schedule -> {
+            ScheduleDto scheduleDto = new ScheduleDto();
+            mapper.map(schedule,scheduleDto);
+            scheduleDto.setAvailableDay(scheduleDto.getAvailableDate().toLocalDate());
+            scheduleDtos.add(scheduleDto);
+        });
         log.info("SCHEDULE LIST: " + scheduleList);
         log.info("FINISHED: " + " getAllSchedule ");
-        return scheduleList;
+        return scheduleDtos.stream().collect(Collectors.groupingBy(ScheduleDto::getAvailableDay));
     }
 
     public Schedule makeReserve(Long studentId, Long scheduleId){
@@ -103,14 +125,14 @@ public class ScheduleService {
 
 
     public PriorityQueue<Schedule> getQueue(Long eventId) {
-        List<Schedule> schedules = getAllSchedule(eventId)
-                .stream()
-                .filter(schedule -> !schedule.getIsAvailable())
-                .filter(schedule -> schedule.getIsCompleted()==0)
-                .collect(Collectors.toList());
-
-        PriorityQueue<Schedule> queue = new PriorityQueue<>(schedules);
-        return queue;
+//        List<Schedule> schedules = getAllSchedule(eventId)
+//                .stream()
+//                .filter(schedule -> !schedule.getIsAvailable())
+//                .filter(schedule -> schedule.getIsCompleted()==0)
+//                .collect(Collectors.toList());
+//
+//        PriorityQueue<Schedule> queue = new PriorityQueue<>(schedules);
+        return null;//queue;
     }
 
     public Schedule completeReservation(Long scheduleId){
@@ -131,5 +153,6 @@ public class ScheduleService {
         });
         return getQueue(byId.get().getEvent().getEventId()).peek();
     }
+
 
 }
