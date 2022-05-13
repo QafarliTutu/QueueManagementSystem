@@ -58,7 +58,7 @@ public class ScheduleService {
 
     public List<Schedule> getAllSchedule(Long eventId){
         log.info("STARTED: " + " getAllSchedule ");
-        log.info("EVENTID: " + eventId);
+        log.info("EVENT ID: " + eventId);
         Event event = eventRepo.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found with id " + eventId));
         List<Schedule> scheduleList = scheduleRepo.findAllByEvent(event);
         log.info("SCHEDULE LIST: " + scheduleList);
@@ -68,7 +68,7 @@ public class ScheduleService {
 
     public Schedule makeReserve(Long studentId, Long scheduleId){
         log.info("STARTED: " + " makeReserve ");
-        log.info("STUDENTID: " + studentId + " SCHEDULEID: " + scheduleId);
+        log.info("STUDENT ID: " + studentId + " SCHEDULE ID: " + scheduleId);
         Student student = studentRepo.findById(studentId).orElseThrow(()-> new RuntimeException("Student not found with ID: " + studentId));
         Schedule schedule = scheduleRepo.findById(scheduleId).orElseThrow(()-> new RuntimeException("Schedule not found with ID: " + scheduleId));
         schedule.setStudent(student);
@@ -92,7 +92,7 @@ public class ScheduleService {
 
     public Schedule cancelSchedule(Long scheduleId){
         log.info("STARTED: " + " cancelSchedule ");
-        log.info("SCHEDULEID: " + scheduleId);
+        log.info("SCHEDULE ID: " + scheduleId);
         Schedule schedule = scheduleRepo.findById(scheduleId).orElseThrow(()-> new RuntimeException("Schedule not found with ID: " + scheduleId));
         schedule.setIsAvailable(true);
         schedule.setStudent(null);

@@ -4,15 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.asoiu.QueueManagementSystem.dto.EventDto;
 import org.asoiu.QueueManagementSystem.entity.Event;
-import org.asoiu.QueueManagementSystem.entity.Schedule;
 import org.asoiu.QueueManagementSystem.repository.EventRepository;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Log4j2
 @Service
@@ -58,6 +57,18 @@ public class EventService {
         return events;
     }
 
+    public boolean deleteEvent(Long eventId){
+        log.info("STARTED: " + " cancelEvent ");
+        log.info("ID: " + eventId);
+        AtomicBoolean result = new AtomicBoolean(false);
+        eventRepo.findById(eventId).ifPresent(event -> {
+            eventRepo.delete(event);
+            result.set(true);
+        });
+        log.info("RESULT: " + result.get());
+        log.info("FINISHED: " + " cancelEvent ");
+        return result.get();
+    }
 
 
 }

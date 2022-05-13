@@ -54,6 +54,16 @@ public class EventController {
                 .build();
     }
 
+    @PutMapping("/{eventId}")
+    public ServiceResponse<Boolean> deleteEvent(@PathVariable Long eventId){
+        log.info("CALLED: " + " deleteEvent " + "PATH VARIABLE= " + eventId);
+        Boolean result = eventService.deleteEvent(eventId);
+        return ServiceResponse.<Boolean>builder()
+                .successful(result)
+                .payload(result)
+                .build();
+    }
+
 
 
 }
