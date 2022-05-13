@@ -1,5 +1,6 @@
 package org.asoiu.QueueManagementSystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -23,13 +24,16 @@ public class Event {
     private String name;
 
     @Column(name = "createdDate", nullable = false, updatable = false)
+    @JsonFormat(pattern="dd-MM-yyyy HH:mm:ss")
     @CreationTimestamp
     private LocalDateTime createdDate;
 
     @Column(name = "startDate")
+    @JsonFormat(pattern="dd-MM-yyyy HH:mm:ss")
     private LocalDateTime startDate;
 
     @Column(name = "endDate")
+    @JsonFormat(pattern="dd-MM-yyyy HH:mm:ss")
     private LocalDateTime endDate;
 
     @Column(name = "workersNum")

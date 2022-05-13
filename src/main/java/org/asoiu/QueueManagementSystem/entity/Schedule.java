@@ -1,5 +1,6 @@
 package org.asoiu.QueueManagementSystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -21,6 +22,7 @@ public class Schedule implements Comparable{
     private Long scheduleId;
 
     @Column(name = "availableDate")
+    @JsonFormat(pattern="dd-MM-yyyy HH:mm:ss")
     private LocalDateTime availableDate;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -39,6 +41,7 @@ public class Schedule implements Comparable{
     private int isCompleted;
 
     @Column(name = "createdDate", nullable = false, updatable = false)
+    @JsonFormat(pattern="dd-MM-yyyy HH:mm:ss")
     @CreationTimestamp
     private LocalDateTime createdDate;
 

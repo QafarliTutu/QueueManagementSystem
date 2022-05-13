@@ -1,5 +1,6 @@
 package org.asoiu.QueueManagementSystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class Employee {
     private String password;
 
     @Column(name = "createdDate", nullable = false, updatable = false)
+    @JsonFormat(pattern="dd-MM-yyyy HH:mm:ss")
     @CreationTimestamp
     private LocalDateTime createdDate;
 }
