@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -32,9 +33,9 @@ public class Student {
     @Column(name = "password")
     private String password;
 
-    @OneToOne(mappedBy = "student",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "student",cascade = CascadeType.ALL)
     @JsonIgnore
-    private Schedule schedule;
+    private List<Schedule> schedule;
 
     @Column(name = "createdDate", nullable = false, updatable = false)
     @JsonFormat(pattern="dd-MM-yyyy HH:mm:ss")

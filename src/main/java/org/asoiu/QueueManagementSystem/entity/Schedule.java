@@ -30,7 +30,7 @@ public class Schedule implements Comparable{
     @JsonIgnore
     private Event event;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "student_id")
     private Student student;
 

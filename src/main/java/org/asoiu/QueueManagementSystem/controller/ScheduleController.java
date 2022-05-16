@@ -36,13 +36,16 @@ public class ScheduleController {
     }
 
     @PostMapping("/reserve")
-    public ServiceResponse<Schedule> makeReserve(@RequestBody ReserveDto reserveDto) throws MyExceptionClass {
+    public ServiceResponse<?> makeReserve(@RequestBody ReserveDto reserveDto) throws MyExceptionClass {
         log.info("CALLED: " + " makeReserve " + "REQUEST BODY= " + reserveDto.toString());
+        boolean b = scheduleService.checkReserveExistence(reserveDto.getScheduleId(), reserveDto.getStudentId());
+        if(b) return ServiceResponse.<String>builder().successful(false).payload("You already have one schedule for this Event.").message("Something went wrong!").build();
         Schedule schedule = scheduleService.makeReserve(reserveDto.getStudentId(), reserveDto.getScheduleId());
         return ServiceResponse.<Schedule>builder()
                 .successful(true)
                 .payload(schedule)
                 .build();
+
     }
 
     @PostMapping("/cancel")

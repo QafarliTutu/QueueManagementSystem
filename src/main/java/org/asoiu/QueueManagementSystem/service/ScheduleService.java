@@ -3,6 +3,7 @@ package org.asoiu.QueueManagementSystem.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.asoiu.QueueManagementSystem.dto.ReserveDto;
 import org.asoiu.QueueManagementSystem.dto.ScheduleDto;
 import org.asoiu.QueueManagementSystem.entity.Event;
 import org.asoiu.QueueManagementSystem.entity.Schedule;
@@ -96,7 +97,9 @@ public class ScheduleService {
         Schedule schedule = scheduleRepo.findById(scheduleId).orElseThrow(()-> new MyExceptionClass("Schedule not found with ID: " + scheduleId));
         schedule.setStudent(student);
         schedule.setIsAvailable(false);
-        student.setSchedule(schedule);
+        List<Schedule> schedules = student.getSchedule();
+        schedules.add(schedule);
+        student.setSchedule(schedules);
         scheduleRepo.save(schedule);
 
         SimpleMailMessage mail = new SimpleMailMessage();
@@ -126,35 +129,60 @@ public class ScheduleService {
 
 
     public PriorityQueue<Schedule> getQueue(Long eventId) throws MyExceptionClass {
+        log.info("STARTED: " + " getQueue ");
+        log.info("EVENT ID: " + eventId);
         Event event = eventRepo.findById(eventId).orElseThrow(() -> new MyExceptionClass("Event not found with ID: " + eventId));
         List<Schedule> schedules = scheduleRepo.findAllByEvent(event)
                 .stream()
                 .filter(schedule -> !schedule.getIsAvailable())
                 .filter(schedule -> schedule.getIsCompleted() == 0)
                 .collect(Collectors.toList());
-
         PriorityQueue<Schedule> queue = new PriorityQueue<>(schedules);
+        log.info("SCHEDULES: " + schedules);
+        log.info("FINISHED: " + " getQueue ");
         return queue;
     }
 
     public Schedule completeReservation(Long scheduleId) throws MyExceptionClass {
+        log.info("STARTED: " + " completeReservation ");
+        log.info("SCHEDULE ID: " + scheduleId);
         Optional<Schedule> byId = scheduleRepo.findById(scheduleId);
         byId.ifPresent(schedule -> {
             schedule.setIsCompleted(1);
             scheduleRepo.save(schedule);
         });
-
+        log.info("SCHEDULE: " + byId);
+        log.info("FINISHED: " + " completeReservation ");
         return getQueue(byId.get().getEvent().getEventId()).peek();
     }
 
     public Schedule declineReservation(Long scheduleId) throws MyExceptionClass {
+        log.info("STARTED: " + " declineReservation ");
+        log.info("SCHEDULE ID: " + scheduleId);
         Optional<Schedule> byId = scheduleRepo.findById(scheduleId);
         byId.ifPresent(schedule -> {
             schedule.setIsCompleted(-1);
             scheduleRepo.save(schedule);
         });
+        log.info("SCHEDULE: " + byId);
+        log.info("FINISHED: " + " declineReservation ");
         return getQueue(byId.get().getEvent().getEventId()).peek();
     }
 
 
+    public boolean checkReserveExistence(Long scheduleId, Long studentId) throws MyExceptionClass {
+        log.info("STARTED: " + " checkReserveExistence ");
+        log.info("STUDENT ID: " + studentId + " SCHEDULE ID: " + scheduleId);
+        Schedule schedule = scheduleRepo.findById(scheduleId).orElseThrow(()-> new MyExceptionClass("Schedule not found with ID: " + scheduleId));
+        Event event = schedule.getEvent();
+        boolean b = event.getSchedules().stream().anyMatch(schedule1 -> {
+            Student student = schedule1.getStudent();
+            if(student!=null) {
+                Long studentId1 = schedule1.getStudent().getStudentId();
+                return studentId1.equals(studentId);
+            }return false;
+        });
+        log.info("FINISHED: " + " checkReserveExistence ");
+        return b;
+    }
 }
