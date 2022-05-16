@@ -177,7 +177,7 @@ public class ScheduleService {
         Event event = schedule.getEvent();
         boolean b = event.getSchedules().stream().anyMatch(schedule1 -> {
             Student student = schedule1.getStudent();
-            if(student!=null) {
+            if(student!=null && schedule1.getIsCompleted() == 0) {
                 Long studentId1 = schedule1.getStudent().getStudentId();
                 return studentId1.equals(studentId);
             }return false;
