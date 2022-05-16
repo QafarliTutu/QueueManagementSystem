@@ -3,6 +3,7 @@ package org.asoiu.QueueManagementSystem.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.asoiu.QueueManagementSystem.dto.EventDto;
+import org.asoiu.QueueManagementSystem.dto.EventResp;
 import org.asoiu.QueueManagementSystem.entity.Event;
 import org.asoiu.QueueManagementSystem.entity.Schedule;
 import org.asoiu.QueueManagementSystem.exception.MyExceptionClass;
@@ -44,14 +45,14 @@ public class EventService {
 
     }
 
-    public EventDto findEventById(Long eventId) throws MyExceptionClass {
+    public EventResp findEventById(Long eventId) throws MyExceptionClass {
         log.info("STARTED: " + " findEventById ");
         log.info("ID: " + eventId);
         ModelMapper modelMapper = new ModelMapper();
         Event event = eventRepo.findById(eventId).orElseThrow(()-> new MyExceptionClass("Event not found with ID: " + eventId));
         log.info("EVENT: " + event);
         log.info("FINISHED: " + " findEventById ");
-        return  modelMapper.map(event,EventDto.class);
+        return  modelMapper.map(event,EventResp.class);
     }
 
     public List<Event> getAllEvents(){

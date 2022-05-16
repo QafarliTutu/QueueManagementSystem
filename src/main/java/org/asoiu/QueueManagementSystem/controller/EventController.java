@@ -2,6 +2,7 @@ package org.asoiu.QueueManagementSystem.controller;
 
 import lombok.extern.log4j.Log4j2;
 import org.asoiu.QueueManagementSystem.dto.EventDto;
+import org.asoiu.QueueManagementSystem.dto.EventResp;
 import org.asoiu.QueueManagementSystem.dto.ServiceResponse;
 import org.asoiu.QueueManagementSystem.entity.Employee;
 import org.asoiu.QueueManagementSystem.entity.Event;
@@ -46,12 +47,12 @@ public class EventController {
     }
 
     @GetMapping("/{eventId}")
-    public ServiceResponse<EventDto> findEventById(@PathVariable Long eventId) throws MyExceptionClass {
+    public ServiceResponse<EventResp> findEventById(@PathVariable Long eventId) throws MyExceptionClass {
         log.info("CALLED: " + " findEventById " + "PATH VARIABLE= " + eventId);
-        EventDto eventDto = eventService.findEventById(eventId);
-        return ServiceResponse.<EventDto>builder()
+        EventResp eventResp = eventService.findEventById(eventId);
+        return ServiceResponse.<EventResp>builder()
                 .successful(true)
-                .payload(eventDto)
+                .payload(eventResp)
                 .build();
     }
 
