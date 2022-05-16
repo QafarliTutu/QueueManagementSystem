@@ -49,16 +49,15 @@ public class ScheduleService {
 
         for (int i = 0; ; i++) {
             if (calendar.getTime().getTime() >= calendar2.getTime().getTime()) break;
-            Schedule schedule = new Schedule();
-            schedule.setEvent(event);
-            schedule.setIsAvailable(true);
-            schedule.setIsCompleted(0);
-            schedule.setAvailableDate(LocalDateTime.ofInstant(calendar.toInstant(), calendar.getTimeZone().toZoneId()));
+            if (isWorkHour(calendar.get(Calendar.HOUR_OF_DAY))) {
+                Schedule schedule = new Schedule();
+                schedule.setEvent(event);
+                schedule.setIsAvailable(true);
+                schedule.setIsCompleted(0);
+                schedule.setAvailableDate(LocalDateTime.ofInstant(calendar.toInstant(), calendar.getTimeZone().toZoneId()));
+                scheduleList.add(schedule);
+            }
             calendar.add(Calendar.MINUTE, 15);
-            if (!isWorkHour(calendar.get(Calendar.HOUR_OF_DAY))) continue;
-            scheduleList.add(schedule);
-
-
         }
         log.info("SCHEDULE LIST: " + scheduleList);
         log.info("FINISHED: " + " createSchedule ");
@@ -122,6 +121,7 @@ public class ScheduleService {
         Schedule schedule = scheduleRepo.findById(scheduleId).orElseThrow(()-> new MyExceptionClass("Schedule not found with ID: " + scheduleId));
         schedule.setIsAvailable(true);
         schedule.setStudent(null);
+        scheduleRepo.save(schedule);
         log.info("SCHEDULE: " + schedule);
         log.info("FINISHED: " + " cancelSchedule ");
         return schedule;
