@@ -14,11 +14,12 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Comparator;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ScheduleDto {
+public class ScheduleDto implements Comparable<ScheduleDto>{
 
     private Long scheduleId;
 
@@ -39,4 +40,10 @@ public class ScheduleDto {
 
     @JsonFormat(pattern="dd-MM-yyyy HH:mm:ss")
     private LocalDateTime createdDate;
+
+    @Override
+    public int compareTo(ScheduleDto o) {
+        return Comparator.comparing(ScheduleDto::getScheduleId)
+                .compare(o, this);
+    }
 }

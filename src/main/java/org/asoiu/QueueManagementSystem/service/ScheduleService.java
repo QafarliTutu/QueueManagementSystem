@@ -86,7 +86,9 @@ public class ScheduleService {
         });
         log.info("SCHEDULE DTO LIST: " + scheduleDtoList);
         log.info("FINISHED: " + " getAllSchedule ");
-        return scheduleDtoList.stream().collect(Collectors.groupingBy(ScheduleDto::getAvailableDay));
+        return scheduleDtoList.stream()
+                .sorted()
+                .collect(Collectors.groupingBy(ScheduleDto::getAvailableDay));
     }
 
     public Schedule makeReserve(Long studentId, Long scheduleId) throws MyExceptionClass {
