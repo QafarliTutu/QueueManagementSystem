@@ -41,7 +41,7 @@ public class StudentController {
                 .build();
     }
 
-    @PostMapping("/myscs/{studentId}")
+    @GetMapping("/myscs/{studentId}")
     public ServiceResponse<List<MySchedulesResponse>> searchMySchedules(@PathVariable Long studentId) throws MyExceptionClass {
         log.info("CALLED: " + " searchMySchedules " + "PATH VARIABLE: " + studentId);
         List<MySchedulesResponse> mySchedulesResponses = studentService.searchMySchedules(studentId);

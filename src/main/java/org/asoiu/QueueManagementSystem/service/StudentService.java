@@ -62,7 +62,7 @@ public class StudentService {
                     scResponse.setId(schedule.getScheduleId());
                     scResponse.setEventId(schedule.getEvent().getEventId());
                     scResponse.setStudentId(studentId);
-                    scResponse.setAvailableDate(schedule.getAvailableDate().toString());
+                    scResponse.setAvailableDate(schedule.getAvailableDate());
                     return scResponse;
                 }).collect(Collectors.toList());
 
