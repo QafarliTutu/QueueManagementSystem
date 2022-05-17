@@ -67,7 +67,7 @@ public class ScheduleController {
                 .build();
     }
 
-    @PutMapping("/queue/complete/{scheduleId}")
+    @PostMapping("/queue/complete/{scheduleId}")
     public ServiceResponse<Schedule> completeReservation(@PathVariable Long scheduleId) throws MyExceptionClass {
         Schedule schedule = scheduleService.completeReservation(scheduleId);
         return ServiceResponse.<Schedule>builder()
@@ -76,7 +76,7 @@ public class ScheduleController {
                 .build();
     }
 
-    @PutMapping("/queue/decline/{scheduleId}")
+    @PostMapping("/queue/decline/{scheduleId}")
     public ServiceResponse<Schedule> declineReservation(@PathVariable Long scheduleId) throws MyExceptionClass {
         Schedule schedule = scheduleService.declineReservation(scheduleId);
         return ServiceResponse.<Schedule>builder()
