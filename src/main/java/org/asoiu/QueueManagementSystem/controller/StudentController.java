@@ -3,15 +3,15 @@ package org.asoiu.QueueManagementSystem.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.asoiu.QueueManagementSystem.dto.LoginStudentDto;
+import org.asoiu.QueueManagementSystem.dto.MySchedulesResponse;
 import org.asoiu.QueueManagementSystem.dto.RegisterStudentDto;
 import org.asoiu.QueueManagementSystem.dto.ServiceResponse;
 import org.asoiu.QueueManagementSystem.entity.Student;
 import org.asoiu.QueueManagementSystem.exception.MyExceptionClass;
 import org.asoiu.QueueManagementSystem.service.StudentService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Log4j2
@@ -40,4 +40,15 @@ public class StudentController {
                 .payload(student)
                 .build();
     }
+
+    @PostMapping("/myscs/{studentId}")
+    public ServiceResponse<List<MySchedulesResponse>> searchMySchedules(@PathVariable Long studentId) throws MyExceptionClass {
+        log.info("CALLED: " + " searchMySchedules " + "PATH VARIABLE: " + studentId);
+        List<MySchedulesResponse> mySchedulesResponses = studentService.searchMySchedules(studentId);
+        return ServiceResponse.<List<MySchedulesResponse>>builder()
+                .successful(true)
+                .payload(mySchedulesResponses)
+                .build();
+    }
+
 }
