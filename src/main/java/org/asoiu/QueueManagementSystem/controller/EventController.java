@@ -56,7 +56,7 @@ public class EventController {
                 .build();
     }
 
-    @DeleteMapping("/{eventId}")
+    @PostMapping("/{eventId}")
     public ServiceResponse<Boolean> deleteEvent(@PathVariable Long eventId){
         log.info("CALLED: " + " deleteEvent " + "PATH VARIABLE= " + eventId);
         Boolean result = eventService.deleteEvent(eventId);
