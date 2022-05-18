@@ -41,7 +41,7 @@ public class EventService {
 
         log.info("EVENT: " + event);
         log.info("FINISHED: " + " createEvent ");
-        return event;
+        return eventRepo.save(event);
 
     }
 

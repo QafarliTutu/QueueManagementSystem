@@ -61,7 +61,7 @@ public class ScheduleService {
         }
         log.info("SCHEDULE LIST: " + scheduleList);
         log.info("FINISHED: " + " createSchedule ");
-        return scheduleRepo.saveAll(scheduleList);
+        return scheduleList;
 
     }
 
