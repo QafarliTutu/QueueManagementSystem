@@ -38,12 +38,9 @@ public class ScheduleService {
         log.info("EVENT: " + event);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(java.util.Date.from(event.getStartDate().atZone(ZoneId.systemDefault()).toInstant()));
-     //   calendar.add(Calendar.HOUR_OF_DAY, 9);
 
         Calendar calendar2 = Calendar.getInstance();
         calendar2.setTime(java.util.Date.from(event.getEndDate().atZone(ZoneId.systemDefault()).toInstant()));
-       // calendar2.add(Calendar.HOUR_OF_DAY, 17);
-       // calendar2.add(Calendar.MINUTE, 45);
 
         List<Schedule> scheduleList = new ArrayList<>();
 

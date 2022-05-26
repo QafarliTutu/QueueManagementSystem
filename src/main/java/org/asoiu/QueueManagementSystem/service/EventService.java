@@ -35,7 +35,7 @@ public class EventService {
         event.setStartDate(LocalDateTime.parse(eventDto.getStartDate(), dtf));
         event.setEndDate(LocalDateTime.parse(eventDto.getEndDate(), dtf));
 
-        event.setWorkersNum(Integer.valueOf(eventDto.getWorkersNum()));
+        event.setWorkersNum(eventDto.getWorkersNum()==null ? 0:Integer.valueOf(eventDto.getWorkersNum()));
         event.setDescription(eventDto.getDescription());
         event.setSchedules(scheduleService.createSchedule(event));
 
