@@ -41,6 +41,8 @@ public class ScheduleDto implements Comparable<ScheduleDto>{
     @JsonFormat(pattern="dd-MM-yyyy HH:mm:ss")
     private LocalDateTime createdDate;
 
+    private Boolean isPast;
+
     @Override
     public int compareTo(ScheduleDto o) {
         return Comparator.comparing(ScheduleDto::getScheduleId)

@@ -3,6 +3,7 @@ package org.asoiu.QueueManagementSystem.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.util.PropertySource;
 import org.asoiu.QueueManagementSystem.dto.ReserveDto;
 import org.asoiu.QueueManagementSystem.dto.ScheduleDto;
 import org.asoiu.QueueManagementSystem.entity.Event;
@@ -12,10 +13,14 @@ import org.asoiu.QueueManagementSystem.exception.MyExceptionClass;
 import org.asoiu.QueueManagementSystem.repository.EventRepository;
 import org.asoiu.QueueManagementSystem.repository.ScheduleRepository;
 import org.asoiu.QueueManagementSystem.repository.StudentRepository;
+import org.asoiu.QueueManagementSystem.util.SearchCriteria;
+import org.asoiu.QueueManagementSystem.util.StudentSpecifications;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -79,18 +84,22 @@ public class ScheduleService {
             ScheduleDto scheduleDto = new ScheduleDto();
             mapper.map(schedule,scheduleDto);
             scheduleDto.setAvailableDay(scheduleDto.getAvailableDate().toLocalDate());
+            scheduleDto.setIsPast(scheduleDto.getAvailableDate().isAfter(LocalDateTime.now().plusHours(1)));
             scheduleDtoList.add(scheduleDto);
         });
-        log.info("SCHEDULE DTO LIST: " + scheduleDtoList);
-        log.info("FINISHED: " + " getAllSchedule ");
-        return scheduleDtoList.stream()
-                .sorted()
+
+        Map<LocalDate, List<ScheduleDto>> unsorted = scheduleDtoList.stream()
                 .collect(Collectors.groupingBy(ScheduleDto::getAvailableDay));
+
+        log.info("SCHEDULE DTO LIST: " + unsorted);
+        log.info("FINISHED: " + " getAllSchedule ");
+        return new TreeMap<>(unsorted);
     }
 
     public Schedule makeReserve(Long studentId, Long scheduleId) throws MyExceptionClass {
         log.info("STARTED: " + " makeReserve ");
         log.info("STUDENT ID: " + studentId + " SCHEDULE ID: " + scheduleId);
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm");
         Student student = studentRepo.findById(studentId).orElseThrow(()-> new MyExceptionClass("Student not found with ID: " + studentId));
         Schedule schedule = scheduleRepo.findById(scheduleId).orElseThrow(()-> new MyExceptionClass("Schedule not found with ID: " + scheduleId));
         schedule.setStudent(student);
@@ -104,7 +113,7 @@ public class ScheduleService {
         mail.setTo(student.getEmail());
         mail.setSubject("Rezervasiya məlumatlarının təqdim olunması.");
         mail.setFrom("myfirstcalculatorapp@gmail.com");
-        mail.setText("Rezervasiya prosesi uğurla icra olundu. Sizin qeydiyyat üçün yaxınlaşma vaxtınız: " + schedule.getAvailableDate());
+        mail.setText("Rezervasiya prosesi uğurla icra olundu. Sizin qeydiyyat üçün yaxınlaşma vaxtınız: " + formatter.format(schedule.getAvailableDate()));
         emailSenderService.sendEmail(mail);
 
         log.info("STUDENT: " + student);
@@ -127,7 +136,7 @@ public class ScheduleService {
     }
 
 
-    public PriorityQueue<Schedule> getQueue(Long eventId) throws MyExceptionClass {
+    public List<Schedule> getQueue(Long eventId, String name, String pinCode) throws MyExceptionClass {
         log.info("STARTED: " + " getQueue ");
         log.info("EVENT ID: " + eventId);
         Event event = eventRepo.findById(eventId).orElseThrow(() -> new MyExceptionClass("Event not found with ID: " + eventId));
@@ -136,10 +145,30 @@ public class ScheduleService {
                 .filter(schedule -> !schedule.getIsAvailable())
                 .filter(schedule -> schedule.getIsCompleted() == 0)
                 .collect(Collectors.toList());
-        PriorityQueue<Schedule> queue = new PriorityQueue<>(schedules);
-        log.info("SCHEDULES: " + schedules);
-        log.info("FINISHED: " + " getQueue ");
-        return queue;
+
+        if(name.isEmpty() && pinCode.isEmpty()){
+            return schedules;
+        }else {
+            List<Long> students = search(name, pinCode).stream()
+                    .map(Student::getStudentId)
+                    .collect(Collectors.toList());
+
+            return schedules.stream()
+                    .filter(schedule -> students.stream()
+                            .anyMatch(student ->
+                                    student.equals(schedule.getStudent().getStudentId())))
+                    .collect(Collectors.toList());
+
+        }
+    }
+
+    public List<Student> search(String name, String pinCode){
+        StudentSpecifications spec1 =
+                new StudentSpecifications(new SearchCriteria("name", ":", name));
+        StudentSpecifications spec2 =
+                new StudentSpecifications(new SearchCriteria("pinCode", ":", pinCode));
+
+        return studentRepo.findAll(Specification.where(spec1).and(spec2));
     }
 
     public Schedule completeReservation(Long scheduleId) throws MyExceptionClass {
@@ -152,7 +181,7 @@ public class ScheduleService {
         });
         log.info("SCHEDULE: " + byId);
         log.info("FINISHED: " + " completeReservation ");
-        return getQueue(byId.get().getEvent().getEventId()).peek();
+        return byId.orElseThrow(()-> new MyExceptionClass("Schedule not found with ID: " + scheduleId));
     }
 
     public Schedule declineReservation(Long scheduleId) throws MyExceptionClass {
@@ -165,7 +194,7 @@ public class ScheduleService {
         });
         log.info("SCHEDULE: " + byId);
         log.info("FINISHED: " + " declineReservation ");
-        return getQueue(byId.get().getEvent().getEventId()).peek();
+        return byId.orElseThrow(()-> new MyExceptionClass("Schedule not found with ID: " + scheduleId));
     }
 
 

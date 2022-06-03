@@ -14,7 +14,7 @@ import java.util.Date;
 @ToString(exclude = {"student", "event"})
 @NoArgsConstructor
 @AllArgsConstructor
-public class Schedule implements Comparable{
+public class Schedule {
 
     @Id
     @Column(name = "id")
@@ -45,8 +45,5 @@ public class Schedule implements Comparable{
     @CreationTimestamp
     private LocalDateTime createdDate;
 
-    @Override
-    public int compareTo(Object o) {
-        return 0;
-    }
+
 }

@@ -8,7 +8,11 @@ import org.asoiu.QueueManagementSystem.dto.RegisterStudentDto;
 import org.asoiu.QueueManagementSystem.dto.ServiceResponse;
 import org.asoiu.QueueManagementSystem.entity.Student;
 import org.asoiu.QueueManagementSystem.exception.MyExceptionClass;
+import org.asoiu.QueueManagementSystem.repository.StudentRepository;
 import org.asoiu.QueueManagementSystem.service.StudentService;
+import org.asoiu.QueueManagementSystem.util.SearchCriteria;
+import org.asoiu.QueueManagementSystem.util.StudentSpecifications;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +24,7 @@ import java.util.List;
 public class StudentController {
 
     private final StudentService studentService;
+    private final StudentRepository repository;
 
     @PostMapping("/register")
     public ServiceResponse<Student> register(@RequestBody RegisterStudentDto registerStudentDto) throws MyExceptionClass {
@@ -49,6 +54,18 @@ public class StudentController {
                 .successful(true)
                 .payload(mySchedulesResponses)
                 .build();
+    }
+
+    @GetMapping("/search")
+    public List<Student> search(){
+        StudentSpecifications spec1 =
+                new StudentSpecifications(new SearchCriteria("name", ":", ""));
+        StudentSpecifications spec2 =
+                new StudentSpecifications(new SearchCriteria("pinCode", ":", ""));
+
+        List<Student> results = repository.findAll(Specification.where(spec1).and(spec2));
+        System.out.println(results);
+        return results;
     }
 
 }

@@ -42,5 +42,4 @@ public class Student {
     @CreationTimestamp
     private LocalDateTime createdDate;
 
-
 }

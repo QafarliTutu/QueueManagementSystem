@@ -43,5 +43,5 @@ public class Event {
     private Integer workersNum;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-    private Collection<Schedule> schedules = new PriorityQueue<>();
+    private Collection<Schedule> schedules;
 }

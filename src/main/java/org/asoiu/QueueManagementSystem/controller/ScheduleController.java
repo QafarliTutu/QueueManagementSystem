@@ -9,6 +9,7 @@ import org.asoiu.QueueManagementSystem.entity.Employee;
 import org.asoiu.QueueManagementSystem.entity.Schedule;
 import org.asoiu.QueueManagementSystem.exception.MyExceptionClass;
 import org.asoiu.QueueManagementSystem.service.ScheduleService;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,9 +60,9 @@ public class ScheduleController {
     }
 
     @GetMapping("/queue/{eventId}")
-    public ServiceResponse<PriorityQueue<Schedule>> getQueue(@PathVariable Long eventId) throws MyExceptionClass {
-        PriorityQueue<Schedule> queue = scheduleService.getQueue(eventId);
-        return ServiceResponse.<PriorityQueue<Schedule>>builder()
+    public ServiceResponse<List<Schedule>> getQueue(@PathVariable Long eventId, @RequestParam(required = false, defaultValue = "") String name , @RequestParam(required = false, defaultValue = "") String pinCode) throws MyExceptionClass {
+        List<Schedule> queue = scheduleService.getQueue(eventId, name, pinCode);
+        return ServiceResponse.<List<Schedule>>builder()
                 .successful(true)
                 .payload(queue)
                 .build();
