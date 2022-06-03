@@ -81,7 +81,7 @@ public class ScheduleService {
             ScheduleDto scheduleDto = new ScheduleDto();
             mapper.map(schedule,scheduleDto);
             scheduleDto.setAvailableDay(scheduleDto.getAvailableDate().toLocalDate());
-            scheduleDto.setCanBeReserved(scheduleDto.getAvailableDate().isAfter(LocalDateTime.now().plusHours(1)));
+            scheduleDto.setCanBeReserved(scheduleDto.getAvailableDate().isAfter(LocalDateTime.now()));
             scheduleDtoList.add(scheduleDto);
         });
 
