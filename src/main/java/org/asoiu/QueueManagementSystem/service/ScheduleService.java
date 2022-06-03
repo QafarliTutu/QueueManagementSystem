@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -97,7 +98,6 @@ public class ScheduleService {
     public Schedule makeReserve(Long studentId, Long scheduleId) throws MyExceptionClass {
         log.info("STARTED: " + " makeReserve ");
         log.info("STUDENT ID: " + studentId + " SCHEDULE ID: " + scheduleId);
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm");
         Student student = studentRepo.findById(studentId).orElseThrow(()-> new MyExceptionClass("Student not found with ID: " + studentId));
         Schedule schedule = scheduleRepo.findById(scheduleId).orElseThrow(()-> new MyExceptionClass("Schedule not found with ID: " + scheduleId));
         schedule.setStudent(student);
@@ -107,11 +107,15 @@ public class ScheduleService {
         student.setSchedule(schedules);
         scheduleRepo.save(schedule);
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+//        LocalDateTime dateTime = schedule.getAvailableDate();
+//        String formattedDateTime = dateTime.format(formatter); // "1986-04-08 12:30"
+
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(student.getEmail());
         mail.setSubject("Rezervasiya məlumatlarının təqdim olunması.");
         mail.setFrom("myfirstcalculatorapp@gmail.com");
-        mail.setText("Rezervasiya prosesi uğurla icra olundu. Sizin qeydiyyat üçün yaxınlaşma vaxtınız: " + formatter.format(schedule.getAvailableDate()));
+        mail.setText("Rezervasiya prosesi uğurla icra olundu. Sizin qeydiyyat üçün yaxınlaşma vaxtınız: " + schedule.getAvailableDate().format(formatter));
         emailSenderService.sendEmail(mail);
 
         log.info("STUDENT: " + student);
