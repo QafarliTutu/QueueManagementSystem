@@ -3,8 +3,6 @@ package org.asoiu.QueueManagementSystem.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.util.PropertySource;
-import org.asoiu.QueueManagementSystem.dto.ReserveDto;
 import org.asoiu.QueueManagementSystem.dto.ScheduleDto;
 import org.asoiu.QueueManagementSystem.entity.Event;
 import org.asoiu.QueueManagementSystem.entity.Schedule;
@@ -24,7 +22,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -84,7 +81,7 @@ public class ScheduleService {
             ScheduleDto scheduleDto = new ScheduleDto();
             mapper.map(schedule,scheduleDto);
             scheduleDto.setAvailableDay(scheduleDto.getAvailableDate().toLocalDate());
-            scheduleDto.setIsPast(scheduleDto.getAvailableDate().isAfter(LocalDateTime.now().plusHours(1)));
+            scheduleDto.setCanBeReserved(scheduleDto.getAvailableDate().isAfter(LocalDateTime.now().plusHours(1)));
             scheduleDtoList.add(scheduleDto);
         });
 
@@ -156,8 +153,7 @@ public class ScheduleService {
 
             return schedules.stream()
                     .filter(schedule -> students.stream()
-                            .anyMatch(student ->
-                                    student.equals(schedule.getStudent().getStudentId())))
+                            .anyMatch(student -> student.equals(schedule.getStudent().getStudentId())))
                     .collect(Collectors.toList());
 
         }

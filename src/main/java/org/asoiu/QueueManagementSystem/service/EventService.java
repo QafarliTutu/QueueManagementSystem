@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -57,7 +58,9 @@ public class EventService {
 
     public List<Event> getAllEvents(){
         log.info("STARTED: " + " getAllEvents ");
-        List<Event> events = eventRepo.findAll();
+        List<Event> events = eventRepo.findAll().stream()
+                .filter(event -> !event.getEndDate().minusMinutes(20).isBefore(LocalDateTime.now()))
+                .collect(Collectors.toList());
         log.info("EVENTS: " + events);
         log.info("FINISHED: " + " getAllEvents ");
         return events;
