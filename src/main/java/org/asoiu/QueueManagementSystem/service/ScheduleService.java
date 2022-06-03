@@ -89,6 +89,7 @@ public class ScheduleService {
         });
 
         Map<LocalDate, List<ScheduleDto>> unsorted = scheduleDtoList.stream()
+                .sorted(Comparator.comparing(ScheduleDto::getAvailableDate))
                 .collect(Collectors.groupingBy(ScheduleDto::getAvailableDay));
 
         log.info("SCHEDULE DTO LIST: " + unsorted);
