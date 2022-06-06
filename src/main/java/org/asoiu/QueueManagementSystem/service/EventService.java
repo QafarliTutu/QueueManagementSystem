@@ -39,8 +39,6 @@ public class EventService {
         event.setWorkersNum(eventDto.getWorkersNum()==null ? 0:Integer.valueOf(eventDto.getWorkersNum()));
         event.setDescription(eventDto.getDescription());
         event.setSchedules(scheduleService.createSchedule(event));
-
-        log.info("EVENT: " + event);
         log.info("FINISHED: " + " createEvent ");
         return eventRepo.save(event);
 

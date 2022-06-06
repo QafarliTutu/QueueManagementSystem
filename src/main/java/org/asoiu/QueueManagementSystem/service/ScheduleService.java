@@ -113,9 +113,9 @@ public class ScheduleService {
 
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(student.getEmail());
-        mail.setSubject("Rezervasiya məlumatlarının təqdim olunması.");
-        mail.setFrom("myfirstcalculatorapp@gmail.com");
-        mail.setText("Rezervasiya prosesi uğurla icra olundu. Sizin qeydiyyat üçün yaxınlaşma vaxtınız: " + schedule.getAvailableDate().format(formatter));
+        mail.setSubject("Submission of reservation information.");
+        mail.setFrom("asoiu.team@yahoo.com");
+        mail.setText("The reservation process was completed successfully. Your session time is: " + schedule.getAvailableDate().format(formatter));
         emailSenderService.sendEmail(mail);
 
         log.info("STUDENT: " + student);
